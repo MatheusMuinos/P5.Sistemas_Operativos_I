@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <math.h>
+#include <pthread.h>
 
 #define MAX 100
 
@@ -64,7 +66,7 @@ int main(){
             void f1 (int n){
         
                 int x = n + 1;
-                printf ("parametro de f1 n: %p variable local para f1 x: %p\n", &, &x);    
+                printf ("parametro de f1 n: %p variable local para f1 x: %p\n", &n, &x);    
             } 
             void f2 (int n) {
                 int y = n + 2;
@@ -115,7 +117,8 @@ int main(){
                 int param = *(int*)arg;
                 int var_local_hilo = var_global * param;
                 int *m = malloc(10);
-                printf("Hilo param: %p local: %p malloc: %p global: %p\n", &param, &var_local_hilo, m, &global1);
+                printf("Hilo param: %p local: %p malloc: %p global: %p\n", &param, &var_local_hilo, m, &var_global);
+                free(m);
                 return NULL;
             }
 
