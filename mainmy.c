@@ -55,10 +55,14 @@ int main(){
         
             printf("Dirección de la función main: %p\n", (void*)&main);
 
-            printf("Dirección del primer elemento de local_array[0][0][0]: %p\n", (void*)&local_array[0][0][0]);
-            printf("Dirección del segundo elemento local_array[0][0][1]: %p\n", (void*)&local_array[0][0][1]);
-            printf("Dirección del tercer elemento local_array[0][1][0]: %p\n", (void*)&local_array[0][1][0]);
-
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    for (int k = 0; k < 3; k++) {
+                    // Imprimir la dirección de cada elemento del array 3D
+                        printf("Direccion del elemento del array 3D [%d][%d][%d]: %p\n", i, j, k, (void*)&local_array[i][j][k]);
+                    }
+                }
+            }
             return 0;
         }
         // Apartado 2
