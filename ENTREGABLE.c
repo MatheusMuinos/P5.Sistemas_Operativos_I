@@ -29,17 +29,16 @@ void f2(int n) {
 void* funcion_hilo(void* arg) {
     int param = *(int*)arg;
     int var_local_hilo = var_global * param;
-    int *m = malloc(10);
-    printf("Hilo param: %p \tlocal: \t%p malloc: \t%p global: %p\n", &param, &var_local_hilo, m, &var_global);
-    free(m);
+    int *m = malloc(10*1024*1024);
+    printf("Hilo:\tparametro: %p \tlocal:%p \tmalloc:%p \tglobal:%p\n", &param, &var_local_hilo, m, &var_global);
+    //free(m);
     return NULL;
 }
 
 int main() {
     int opcion;
-
+    printf("PID del proceso: %d\n", getpid());
     // Mostrar menú para que el usuario seleccione el apartado a ejecutar
-    printf("PID del proceso principal: %d\n", getpid());
     printf("Selecciona el apartado a ejecutar (1-6):\n");
     printf("1. Apartado 1: Variables globales, locales y array 3D\n");
     printf("2. Apartado 2: Funciones f1 y f2\n");
@@ -50,6 +49,7 @@ int main() {
     printf("Elige una opción: ");
     
     scanf("%d", &opcion);
+    getchar(); 
 
     switch(opcion) {
 
@@ -144,26 +144,26 @@ int main() {
         case 4: {
             pid_t hijo;
             hijo = fork();
-
             if (hijo < 0) {
                 perror("Error en fork");
                 fflush(stdout);
                 exit(EXIT_FAILURE);
             }
             if (hijo == 0) {
-                printf("PID del proceso hijo: %d\n", getpid());
+                printf("Hijo: PID=%d, PPID=%d\n", getpid(), getppid());
                 printf("Hijo: Pausa antes de malloc\n");
-                getchar(); 
-                int *numero = (int*)malloc(sizeof(int));
+                scanf("%*d");
+                getchar();
+                int *numero = (int*)malloc(10 * 1024 * 1024);
                 printf("Hijo: Pausa después de malloc\n");
+                printf("Direccion del malloc: %p\n", (void*)numero);
+                scanf("%*d");
                 getchar();
                 execlp("./programa", "programa", NULL);
                 perror("Error en execlp");
                 exit(EXIT_FAILURE);
             }
-            printf("Padre: Pausa antes de la ejecución de malloc en el hijo\n");
-            getchar();
-            wait(NULL);
+            waitpid(hijo, NULL, 0);    
             return 0;
         }
 
@@ -189,12 +189,15 @@ int main() {
             }
             pthread_join(hilo1, NULL);
             pthread_join(hilo2, NULL);
-            printf("La variable global tiene la direccion:%p\n",(void*)&var_global);
-            printf("La variable local del hilo principal es:%p",(void*)&var_local);
+            printf("Main: La variable global tiene la direccion:%p\n",(void*)&var_global);
+            printf("Main: La variable local del hilo principal es:%p\n",(void*)&var_local);
 
             scanf("%*d");
             return 0;
         }
+        default:
+            printf("Opción no válida.\n");
+            return 1;
     }
 
     return 0;
