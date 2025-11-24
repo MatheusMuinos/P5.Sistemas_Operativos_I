@@ -137,7 +137,7 @@ int main() {
             free(q);
             printf("free(q) ejecutado. Fin del case 3.\n");
 
-            return 0;  // ou 'break;' dependendo da estrutura do teu main
+            return 0;
         }
 
         // Apartado 4
