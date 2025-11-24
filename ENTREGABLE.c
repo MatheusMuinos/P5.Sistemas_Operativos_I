@@ -113,7 +113,7 @@ int main() {
             int c;
             while ((c = getchar()) != '\n' && c != EOF) {}
             getchar(); // agora sim espera o ENTER
-            // PAUSA 1: mirar /proc/PID/maps o pmap -x PID
+            // PAUSA 1: mirar /proc/PID/maps
 
             // 2) Liberar el bloque
             free(p);
