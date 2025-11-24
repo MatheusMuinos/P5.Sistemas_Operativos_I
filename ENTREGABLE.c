@@ -39,6 +39,7 @@ int main() {
     int opcion;
 
     // Mostrar menú para que el usuario seleccione el apartado a ejecutar
+    printf("PID del proceso principal: %d\n", getpid());
     printf("Selecciona el apartado a ejecutar (1-6):\n");
     printf("1. Apartado 1: Variables globales, locales y array 3D\n");
     printf("2. Apartado 2: Funciones f1 y f2\n");
@@ -92,30 +93,65 @@ int main() {
         case 2: {
             f1(10);
             f2(20);
+            // limpa o buffer do ENTER do scanf
+            int c;
+            while ((c = getchar()) != '\n' && c != EOF) {}
+            getchar();
             return 0;
         }
 
         // Apartado 3
         case 3: {
-            int *p = malloc(100 * sizeof(int));
-            printf("Alocacion de memoria: %p\n", p);
-            scanf("%*d"); // Mantener el proceso activo para mirar la memoria
-            getchar();
+
+            // 1) Primer malloc: tamaño pequeño
+            size_t nbytes1 = 100 * sizeof(int);
+            int *p = malloc(nbytes1);
+
+            printf("Primer malloc de %zu bytes. Direccion p = %p\n", nbytes1, (void *)p);
+            printf("Mirar el cat /proc/PID/maps y despues pulsa ENTER para mirar el mapa de memoria DESPUES del primer malloc...\n");
+            // limpa o buffer do ENTER do scanf
+            int c;
+            while ((c = getchar()) != '\n' && c != EOF) {}
+            getchar(); // agora sim espera o ENTER
+            // PAUSA 1: mirar /proc/PID/maps o pmap -x PID
+
+            // 2) Liberar el bloque
             free(p);
-            scanf("%*d");
-            return 0;
+            printf("free(p) ejecutado.\n");
+            printf("Mirar el cat /proc/PID/maps y despues pulsa ENTER para mirar el mapa de memoria DESPUES del free(p)...\n");
+            getchar();  // PAUSA 2: mirar otra vez el mapa de memoria
+
+            // 3) Segundo malloc: tamaño distinto (mas grande)
+            size_t nbytes2 = 1000 * sizeof(int);
+            int *q = malloc(nbytes2);
+            if (q == NULL) {
+                perror("Error en malloc (segundo bloque)");
+                return 1;
+            }
+
+            printf("Segundo malloc de %zu bytes. Direccion q = %p\n", nbytes2, (void *)q);
+            printf("Mirar el cat /proc/PID/maps y despues pulsa ENTER para mirar el mapa de memoria DESPUES del segundo malloc...\n");
+            getchar();  // PAUSA 3: mirar el mapa por tercera vez
+
+            // 4) Liberar el segundo bloque
+            free(q);
+            printf("free(q) ejecutado. Fin del case 3.\n");
+
+            return 0;  // ou 'break;' dependendo da estrutura do teu main
         }
 
         // Apartado 4
         case 4: {
             pid_t hijo;
             hijo = fork();
+
             if (hijo < 0) {
                 perror("Error en fork");
                 fflush(stdout);
                 exit(EXIT_FAILURE);
             }
             if (hijo == 0) {
+                printf("PID del proceso hijo: %d\n", getpid());
                 printf("Hijo: Pausa antes de malloc\n");
                 getchar(); 
                 int *numero = (int*)malloc(sizeof(int));
